@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusFind Admin</title>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-light: #5e72e4;
+        --secondary: #3f37c9;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #4cc9f0;
+        --danger: #f72585;
+        --warning: #fca311;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .admin-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .admin-header {
+        background-color: var(--primary);
+        color: white;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .admin-header h1 {
+        font-size: 1.8rem;
+        font-weight: 600;
+      }
+
+      .logout-btn {
+        background-color: var(--danger);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .logout-btn:hover {
+        background-color: #d1144a;
+      }
+
+      .login-section,
+      .data-section {
+        padding: 30px;
+      }
+
+      .login-section {
+        text-align: center;
+        max-width: 500px;
+        margin: 0 auto;
+      }
+
+      .login-section h2 {
+        color: var(--primary);
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        text-align: left;
+      }
+
+      .form-group label {
+        font-weight: 500;
+        color: var(--dark);
+      }
+
+      .form-control {
+        padding: 12px 15px;
+        border: 1px solid var(--light-gray);
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+      }
+
+      .btn {
+        padding: 12px 20px;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--secondary);
+      }
+
+      .data-section {
+        display: none;
+      }
+
+      .tabs {
+        display: flex;
+        border-bottom: 1px solid var(--light-gray);
+        margin-bottom: 20px;
+      }
+
+      .tab-btn {
+        padding: 12px 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--gray);
+        position: relative;
+        transition: all 0.3s;
+      }
+
+      .tab-btn.active {
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .tab-btn.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: var(--primary);
+      }
+
+      .tab-btn:hover:not(.active) {
+        color: var(--dark);
+      }
+
+      .tab-content {
+        display: none;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      th,
+      td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      th {
+        background-color: var(--primary);
+        color: white;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #fafafa;
+      }
+
+      tr:hover {
+        background-color: #f0f4ff;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      .status-with-finder {
+        background-color: #e3f2fd;
+        color: #1976d2;
+      }
+
+      .status-turned-in {
+        background-color: #e8f5e9;
+        color: #388e3c;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--gray);
+      }
+
+      .empty-state svg {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          margin: 0;
+          border-radius: 0;
+        }
+
+        .tabs {
+          overflow-x: auto;
+          white-space: nowrap;
+          padding-bottom: 5px;
+        }
+
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="admin-container">
+      <div class="admin-header" id="adminHeader" style="display: none">
+        <h1>CampusFind Admin Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="login-section" id="loginSection">
+        <h2>Admin Login</h2>
+        <form
+          class="login-form"
+          onsubmit="event.preventDefault(); checkPassword();"
+        >
+          <div class="form-group">
+            <label for="adminPassword">Password</label>
+            <input
+              type="password"
+              id="adminPassword"
+              class="form-control"
+              placeholder="Enter admin password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+
+      <div class="data-section" id="dataSection">
+        <div class="tabs">
+          <button class="tab-btn active" onclick="showTab('lost')">
+            Lost Items
+          </button>
+          <button class="tab-btn" onclick="showTab('found')">
+            Found Items
+          </button>
+        </div>
+
+        <div id="lostItemsTab" class="tab-content active">
+          <table id="lostTable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Date Lost</th>
+                <th>Location</th>
+                <th>Contact</th>
+              </tr>
+            </thead>
+            <tbody id="lostItemsBody">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+          <div id="lostEmptyState" class="empty-state" style="display: none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3>No Lost Items Found</h3>
+            <p>There are currently no lost item reports in the system.</p>
+          </div>
+        </div>
+
+        <div id="foundItemsTab" class="tab-content">
+          <table id="foundTable">
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Date Found</th>
+                <th>Location</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="foundItemsBody">
+              <!-- Will be populated by JavaScript -->
+            </tbody>
+          </table>
+          <div id="foundEmptyState" class="empty-state" style="display: none">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1"
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3>No Found Items Found</h3>
+            <p>There are currently no found item reports in the system.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Password protection (change this to your secure password)
+      const ADMIN_PASSWORD = "CampusFind@123";
+
+      function checkPassword() {
+        const password = document.getElementById("adminPassword").value;
+        if (password === ADMIN_PASSWORD) {
+          document.getElementById("loginSection").style.display = "none";
+          document.getElementById("dataSection").style.display = "block";
+          document.getElementById("adminHeader").style.display = "flex";
+          loadData();
+        } else {
+          alert("Incorrect password! Please try again.");
+          document.getElementById("adminPassword").focus();
+        }
+      }
+
+      function logout() {
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("dataSection").style.display = "none";
+        document.getElementById("adminHeader").style.display = "none";
+        document.getElementById("adminPassword").value = "";
+      }
+
+      function showTab(tabName) {
+        // Update active tab button
+        document.querySelectorAll(".tab-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Show the selected tab content
+        document.querySelectorAll(".tab-content").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.getElementById(tabName + "ItemsTab").classList.add("active");
+      }
+
+      function loadData() {
+        // Load from localStorage (same as main page)
+        const lostItems = JSON.parse(localStorage.getItem("lostItems")) || [];
+        const foundItems = JSON.parse(localStorage.getItem("foundItems")) || [];
+
+        // Populate lost items table
+        const lostBody = document.getElementById("lostItemsBody");
+        const lostEmptyState = document.getElementById("lostEmptyState");
+
+        if (lostItems.length > 0) {
+          lostBody.innerHTML = lostItems
+            .map(
+              (item) => `
+                    <tr>
+                        <td>${item.name || "N/A"}</td>
+                        <td>${
+                          item.category
+                            ? item.category.charAt(0).toUpperCase() +
+                              item.category.slice(1)
+                            : "N/A"
+                        }</td>
+                        <td>${formatDate(item.date) || "N/A"}</td>
+                        <td>${item.location || "N/A"}</td>
+                        <td>${item.contactInfo || "N/A"}</td>
+                    </tr>
+                `
+            )
+            .join("");
+          lostEmptyState.style.display = "none";
+        } else {
+          lostBody.innerHTML = "";
+          lostEmptyState.style.display = "block";
+        }
+
+        // Populate found items table
+        const foundBody = document.getElementById("foundItemsBody");
+        const foundEmptyState = document.getElementById("foundEmptyState");
+
+        if (foundItems.length > 0) {
+          foundBody.innerHTML = foundItems
+            .map(
+              (item) => `
+                    <tr>
+                        <td>${item.name || "N/A"}</td>
+                        <td>${
+                          item.category
+                            ? item.category.charAt(0).toUpperCase() +
+                              item.category.slice(1)
+                            : "N/A"
+                        }</td>
+                        <td>${formatDate(item.date) || "N/A"}</td>
+                        <td>${item.location || "N/A"}</td>
+                        <td>
+                            <span class="status-badge ${
+                              item.itemStatus === "with-me"
+                                ? "status-with-finder"
+                                : "status-turned-in"
+                            }">
+                                ${
+                                  item.itemStatus === "with-me"
+                                    ? "With Finder"
+                                    : "Turned In"
+                                }
+                            </span>
+                        </td>
+                    </tr>
+                `
+            )
+            .join("");
+          foundEmptyState.style.display = "none";
+        } else {
+          foundBody.innerHTML = "";
+          foundEmptyState.style.display = "block";
+        }
+      }
+
+      function formatDate(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        });
+      }
+
+      // Handle Enter key in password field
+      document
+        .getElementById("adminPassword")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            checkPassword();
+          }
+        });
+    </script>
+  </body>
+</html>
