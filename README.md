@@ -13,6 +13,10 @@
   <p align="center">
     An advanced full-stack MERN web application engineered to reunite students with their lost belongings through AI-powered smart matching, real-time messaging, and interactive geolocation.
   </p>
+
+  <h3>
+    🔴 <a href="https://campus-find-seven.vercel.app/">View Live Demo</a>
+  </h3>
 </div>
 
 <hr />
