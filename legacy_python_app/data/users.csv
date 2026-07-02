@@ -1,0 +1,5 @@
+id,username,email,password,is_admin
+82a845bf-905a-428a-abe5-2dcab7fa33cb,admin,admin@campusfind.com,pbkdf2:sha256:260000$yB43wHjLMH6WFwz5$2d434a02ba45c456d1d4ef9143fd6700019ef033f6c07d8fae0cfc0d7eab1abb,True
+577ff045-17de-46b5-821c-1e196ab4d8e2,nishant,nishant@mail.com,pbkdf2:sha256:260000$HqU05Rec7EktS6hs$7628bd2f7e2e1ad1e62db8e6e112799142376a600236495e9b1019a1574e0900,False
+f9de28e8-940e-4ade-8cf6-d37e6b100e1f,Aniket,aniketsinghal876@gmail.com,pbkdf2:sha256:600000$HpjgZSLM0amSItuF$001c02a64e98dc227e7ff2c91039c6bca1ea77e858a4c5b4dd852c75055b5000,False
+2084d5c3-9446-4603-9f55-f668a278759c,qwerty,qwerty@123,pbkdf2:sha256:260000$38MkhdWKn4xDTs1Z$5d8d609c6930a8e9640c9125f570daa0505f69170ac56eeb62c1022452b483af,False

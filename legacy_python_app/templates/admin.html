@@ -1,0 +1,391 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - CampusFind{% endblock %}
+
+{% block head %}
+<style>
+  .admin-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .admin-header {
+    margin-bottom: 30px;
+  }
+
+  .admin-header h2 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 10px;
+  }
+
+  .tab-btn {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6c757d;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .tab-btn.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .tab-btn.active::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary);
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .admin-table th {
+    background-color: var(--primary);
+    color: white;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+
+  .admin-table tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+
+  .admin-table tr:hover {
+    background-color: #f0f4ff;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .status-with-finder {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  .status-turned-in {
+    background-color: #e8f5e9;
+    color: #388e3c;
+  }
+
+  .action-btns {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-delete {
+    background-color: var(--danger);
+  }
+
+  .btn-delete:hover {
+    background-color: #d63384;
+  }
+
+  .user-role-admin {
+    color: var(--danger);
+    font-weight: 600;
+  }
+
+  .user-role-user {
+    color: var(--info);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 0;
+    color: #6c757d;
+  }
+
+  @media (max-width: 768px) {
+    .admin-table {
+      display: block;
+      overflow-x: auto;
+    }
+    
+    .tabs {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 10px;
+    }
+  }
+  .notify-container {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.notify-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+    font-size: 14px;
+    margin-right: 10px;
+    transition: border-color 0.3s;
+}
+
+.notify-input:focus {
+    border-color: #4f46e5;
+    outline: none;
+}
+
+.notify-button {
+    padding: 10px 16px;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.notify-button:hover {
+    background-color: #4f46e5;
+}
+
+.notify-button:active {
+    transform: scale(0.98);
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Admin Dashboard</h2>
+    <p>Manage lost and found items and user accounts from this control panel.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('lost')">Lost Items</button>
+    <button class="tab-btn" onclick="showTab('found')">Found Items</button>
+    <button class="tab-btn" onclick="showTab('users')">User Accounts</button>
+  </div>
+
+  <div class="notify-container">
+    <input type="email" id="emailInput" class="notify-input" placeholder="Enter recipient's email" required>
+    <button id="notifyButton" class="notify-button">Notify</button>
+  </div>
+
+  <script>
+    document.getElementById('notifyButton').addEventListener('click', async () => {
+        const email = document.getElementById('emailInput').value.trim();
+        
+        // Basic email validation
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+        if (!emailPattern.test(email)) {
+            alert('Please enter a valid email address.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Email sent successfully!');
+            } else {
+                alert('Failed to send email: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error sending notification.');
+        }
+    });
+</script>
+
+  <div id="lost-tab" class="tab-content active">
+    {% if lost_items|length > 0 %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Date Lost</th>
+            <th>Location</th>
+            <th>Contact</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in lost_items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.category|capitalize }}</td>
+              <td>{{ item.date_lost }}</td>
+              <td>{{ item.location }}</td>
+              <td>{{ item.contact_info }}</td>
+              <td>
+                <div class="action-btns">
+                  <form method="POST" action="{{ url_for('delete_lost_item', item_id=item.id) }}">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <h3>No Lost Items</h3>
+        <p>There are currently no lost items in the system.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div id="found-tab" class="tab-content">
+    {% if found_items|length > 0 %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Category</th>
+            <th>Date Found</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in found_items %}
+            <tr>
+              <td>{{ item.name }}</td>
+              <td>{{ item.category|capitalize }}</td>
+              <td>{{ item.date_found }}</td>
+              <td>{{ item.location }}</td>
+              <td>
+                <span class="status-badge {% if item.item_status == 'with-me' %}status-with-finder{% else %}status-turned-in{% endif %}">
+                  {% if item.item_status == 'with-me' %}
+                    With Finder
+                  {% else %}
+                    Turned In
+                  {% endif %}
+                </span>
+              </td>
+              <td>
+                <div class="action-btns">
+                  <form method="POST" action="{{ url_for('delete_found_item', item_id=item.id) }}">
+                    <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this item?')">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <h3>No Found Items</h3>
+        <p>There are currently no found items in the system.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div id="users-tab" class="tab-content">
+    {% if users|length > 0 %}
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td class="{% if user.is_admin %}user-role-admin{% else %}user-role-user{% endif %}">
+                {% if user.is_admin %}
+                  Admin
+                {% else %}
+                  User
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="empty-state">
+        <h3>No Users</h3>
+        <p>There are currently no users in the system.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Update tab button states
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Find the clicked button and add active class
+    event.currentTarget.classList.add('active');
+  }
+</script>
+{% endblock %} 

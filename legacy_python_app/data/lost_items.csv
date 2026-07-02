@@ -1,0 +1,7 @@
+id,name,category,date_lost,location,description,contact_info,image_path,report_date,user_id
+ea86ef5b-be76-4ee8-a515-a66a574a5350,pen,books,2024-11-23,library,parker ,nishant@mail,static/uploads/20250501114336_Screenshot_2024-05-12_185731.png,2025-05-01,577ff045-17de-46b5-821c-1e196ab4d8e2
+985501f9-9011-46b3-bf11-5f361fcc639a,Blue water bottle,accessories,2025-04-30,Library ground floor,it was of blue color,aniketsinghal876@gmail.com,static/uploads/20250501151710_download.jpg,2025-05-01,f9de28e8-940e-4ade-8cf6-d37e6b100e1f
+a6332d4c-bedc-409e-9920-3f8b4c332594,a paper,books,2025-04-30,on the floor ,it was of design,reena@singhal,static/uploads/20250501171631_download.jpg,2025-05-01,f9de28e8-940e-4ade-8cf6-d37e6b100e1f
+51373385-b2c1-415a-b969-207e170e5116,charger,electronics,2025-05-21,p block,blue,vk1843042@gmail.com,static/uploads/20250501220245_Screenshot_2024-05-14_210350.png,2025-05-01,82a845bf-905a-428a-abe5-2dcab7fa33cb
+09bd802f-197a-449e-8895-f4b659e6a9bd,keys,keys,2025-05-18,law,kssknd,vk1843042@gmail.com,static/uploads/20250501220742_Screenshot_2024-08-31_133225.png,2025-05-01,82a845bf-905a-428a-abe5-2dcab7fa33cb
+e413d954-b1cc-4920-a0e7-550c973ba791,keys,keys,2025-05-20,n block,hkf,nishant@mail,static/uploads/20250501222135_Screenshot_2024-05-13_004944.png,2025-05-01,82a845bf-905a-428a-abe5-2dcab7fa33cb

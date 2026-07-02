@@ -1,0 +1,631 @@
+{% extends 'base.html' %}
+
+{% block title %}Browse Items - CampusFind{% endblock %}
+
+{% block head %}
+<style>
+  /* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+body {
+    background-color: #f4f6f8;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+.browse-container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+/* Header section styling */
+.browse-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.browse-header h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #0d6efd;  /* Bootstrap primary blue */
+    margin-bottom: 10px;
+    animation: fadeInDown 0.8s ease;
+}
+
+.browse-header p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 30px;
+    animation: fadeIn 1s ease;
+}
+
+/* Filters container: center and align in one row */
+.filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap; /* will wrap on small screens */
+    margin-bottom: 40px;
+}
+
+/* Common input + select styles */
+.search-box {
+    padding: 12px 18px;
+    border: 1px solid #ddd;
+    border-radius: 50px; /* pill-shaped */
+    font-size: 1rem;
+    min-width: 200px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    background-color: #fff;
+    appearance: none; /* hide default select arrow */
+    //background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20"><polygon points="0,0 20,0 10,10" fill="%23333"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+.filter-control {
+  padding: 12px 18px;
+    border: 1px solid #ddd;
+    border-radius: 50px; /* pill-shaped */
+    font-size: 1rem;
+    min-width: 200px;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    background-color: #fff;
+    appearance: none; /* hide default select arrow */
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20"><polygon points="0,0 20,0 10,10" fill="%23333"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    background-size: 12px;
+}
+
+/* Focus effect */
+.search-box:focus, .filter-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Hover effect */
+.search-box:hover, .filter-control:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+/* Placeholder text */
+.search-box::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Small screens: stack nicely */
+@media (max-width: 600px) {
+    .search-box, .filter-control {
+        min-width: 100%;
+    }
+}
+
+
+/* Animations */
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Add subtle hover effect to selects */
+.filter-control:hover, .search-box:hover {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+
+.items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+
+.item-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+}
+
+.item-image {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.item-card:hover .item-image img {
+    transform: scale(1.1);
+}
+
+.item-info {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.item-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: #222;
+}
+
+.item-status {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.status-lost {
+    background-color: #ffe2e5;
+    color: #c62828;
+}
+
+.status-found {
+    background-color: #d0f0dc;
+    color: #2e7d32;
+}
+
+.bttn {
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 0.95rem;
+    margin-top: 15px;
+    width: fit-content;
+}
+
+.btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 16px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.close-modal:hover {
+    color: #333;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state h3 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="browse-container">
+  <div class="browse-header">
+    <h2>Browse Lost & Found Items</h2>
+    <p>Search through items that have been reported lost or found on campus.</p>
+  </div>
+
+  <div class="filters">
+    <input 
+      type="text" 
+      id="search-items" 
+      class="form-control search-box" 
+      placeholder="Search for items..." 
+    />
+    
+    <select id="filter-category" class="form-control filter-control">
+      <option value="">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+      <option value="accessories">Accessories</option>
+      <option value="books">Books & Notes</option>
+      <option value="keys">Keys</option>
+      <option value="id-cards">ID Cards</option>
+      <option value="other">Other</option>
+    </select>
+    
+    <select id="filter-type" class="form-control filter-control">
+      <option value="all">All Items</option>
+      <option value="lost">Lost Items</option>
+      <option value="found">Found Items</option>
+    </select>
+  </div>
+
+  <div class="items-grid" id="items-grid">
+    {% if lost_items|length == 0 and found_items|length == 0 %}
+      <div class="empty-state">
+        <h3>No Items Found</h3>
+        <p>There are currently no items matching your search criteria.</p>
+      </div>
+    {% else %}
+      {% for item in lost_items %}
+        <div class="item-card" data-type="lost" data-category="{{ item.category }}">
+          <div class="item-image">
+            {% if item.image_path %}
+              <img src="{{ url_for('uploaded_file', filename=item.image_path.split('/')[-1]) }}" alt="{{ item.name }}">
+            {% else %}
+              <svg class="item-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                {% if item.category == 'electronics' %}
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                {% elif item.category == 'clothing' %}
+                  <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path>
+                {% elif item.category == 'accessories' %}
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                {% elif item.category == 'books' %}
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                {% elif item.category == 'keys' %}
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                {% elif item.category == 'id-cards' %}
+                  <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+                  <path d="M9 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+                  <path d="M15 8h2"></path>
+                  <path d="M15 12h2"></path>
+                  <path d="M7 16h10"></path>
+                {% else %}
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                {% endif %}
+              </svg>
+            {% endif %}
+          </div>
+          <div class="item-info">
+            <span class="item-status status-lost">Lost</span>
+            <span class="item-category">{{ item.category|capitalize }}</span>
+            <h3 class="item-title">{{ item.name }}</h3>
+            <p class="item-details">
+              Lost on: {{ item.date_lost }}<br>
+              Location: {{ item.location }}
+            </p>
+            <div class="item-actions">
+              <button class="bttn btn-outline view-details" data-id="{{ item.id }}" data-type="lost">View Details</button>
+              {% if session.user_id %}
+                <button class="bttn btn-primary found-this" data-id="{{ item.id }}">Claim</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+      {% for item in found_items %}
+        <div class="item-card" data-type="found" data-category="{{ item.category }}">
+          <div class="item-image">
+            {% if item.image_path %}
+              <img src="{{ url_for('uploaded_file', filename=item.image_path.split('/')[-1]) }}" alt="{{ item.name }}">
+            {% else %}
+              <svg class="item-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                {% if item.category == 'electronics' %}
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                {% elif item.category == 'clothing' %}
+                  <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.47a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.47a2 2 0 00-1.34-2.23z"></path>
+                {% elif item.category == 'accessories' %}
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <circle cx="12" cy="12" r="6"></circle>
+                  <circle cx="12" cy="12" r="2"></circle>
+                {% elif item.category == 'books' %}
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                {% elif item.category == 'keys' %}
+                  <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
+                {% elif item.category == 'id-cards' %}
+                  <rect x="3" y="4" width="18" height="16" rx="2" ry="2"></rect>
+                  <path d="M9 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+                  <path d="M15 8h2"></path>
+                  <path d="M15 12h2"></path>
+                  <path d="M7 16h10"></path>
+                {% else %}
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                {% endif %}
+              </svg>
+            {% endif %}
+          </div>
+          <div class="item-info">
+            <span class="item-status status-found">Found</span>
+            <span class="item-category">{{ item.category|capitalize }}</span>
+            <h3 class="item-title">{{ item.name }}</h3>
+            <p class="item-details">
+              Found on: {{ item.date_found }}<br>
+              Location: {{ item.location }}
+            </p>
+            <div class="item-actions">
+              <button class="bttn btn-outline view-details" data-id="{{ item.id }}" data-type="found">View Details</button>
+              {% if session.user_id %}
+                <button class="bttn btn-primary claim" data-id="{{ item.id }}">Claim</button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<!-- Item Details Modal -->
+<div id="item-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <div class="modal-header">
+      <h3 id="modal-title">Item Details</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- Item details will be populated here -->
+    </div>
+    <div class="modal-actions">
+      <button class="bttn btn-outline" id="modal-close">Close</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const searchInput = document.getElementById('search-items');
+    const categoryFilter = document.getElementById('filter-category');
+    const typeFilter = document.getElementById('filter-type');
+    const itemCards = document.querySelectorAll('.item-card');
+    
+    function filterItems() {
+      const searchText = searchInput.value.toLowerCase();
+      const category = categoryFilter.value;
+      const type = typeFilter.value;
+      
+      let visibleCount = 0;
+      
+      itemCards.forEach(card => {
+        const cardType = card.dataset.type;
+        const cardCategory = card.dataset.category;
+        const cardTitle = card.querySelector('.item-title').textContent.toLowerCase();
+        const cardDetails = card.querySelector('.item-details').textContent.toLowerCase();
+        
+        // Check if the card matches all filters
+        const matchesSearch = !searchText || 
+                              cardTitle.includes(searchText) || 
+                              cardDetails.includes(searchText);
+        
+        const matchesCategory = !category || cardCategory === category;
+        
+        const matchesType = type === 'all' || cardType === type;
+        
+        // Show or hide the card based on filter matches
+        if (matchesSearch && matchesCategory && matchesType) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      // Show empty state if no items match
+      const itemsGrid = document.getElementById('items-grid');
+      if (visibleCount === 0) {
+        // Check if empty state already exists
+        if (!document.querySelector('.empty-state')) {
+          const emptyState = document.createElement('div');
+          emptyState.className = 'empty-state';
+          emptyState.innerHTML = `
+            <h3>No Items Found</h3>
+            <p>There are currently no items matching your search criteria.</p>
+          `;
+          itemsGrid.appendChild(emptyState);
+        }
+      } else {
+        // Remove empty state if it exists
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+          emptyState.remove();
+        }
+      }
+    }
+    
+    // Add event listeners to filters
+    searchInput.addEventListener('input', filterItems);
+    categoryFilter.addEventListener('change', filterItems);
+    typeFilter.addEventListener('change', filterItems);
+    
+    // Modal functionality
+    const modal = document.getElementById('item-modal');
+    const closeModal = document.querySelector('.close-modal');
+    const modalCloseBtn = document.getElementById('modal-close');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    
+    // Add event listeners to detail buttons
+    document.querySelectorAll('.view-details').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const itemId = this.dataset.id;
+        const itemType = this.dataset.type;
+        
+        // Get the card info
+        const card = this.closest('.item-card');
+        const title = card.querySelector('.item-title').textContent;
+        const category = card.querySelector('.item-category').textContent;
+        const details = card.querySelector('.item-details').textContent;
+        const hasImage = card.querySelector('.item-image img') !== null;
+        
+        // Set modal title
+        modalTitle.textContent = title;
+        
+        // Create modal content
+        let content = `
+          <p><strong>Category:</strong> ${category}</p>
+          <p>${details}</p>
+        `;
+        
+        // Add image if available
+        if (hasImage) {
+          const imageUrl = card.querySelector('.item-image img').src;
+          content = `
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="${imageUrl}" alt="${title}" style="max-width: 100%; max-height: 200px; object-fit: contain;">
+            </div>
+          ` + content;
+        }
+        
+        // Add contact info and steps based on type
+        if (itemType === 'lost') {
+          content += `
+            <p>If you found this item, please report it as a found item or contact us directly.</p>
+            <p><strong>Next steps:</strong> Click the "I Found This" button on the item to indicate you've found it.</p>
+          `;
+        } else {
+          content += `
+            <p>If this is your item, please verify your ownership through the claim process.</p>
+            <p><strong>Next steps:</strong> Click the "Claim" button on the item to start the claim process.</p>
+          `;
+        }
+        
+        modalBody.innerHTML = content;
+        
+        // Show modal
+        modal.style.display = 'block';
+      });
+    });
+    
+    // Close modal functionality
+    function closeModalFunc() {
+      modal.style.display = 'none';
+    }
+    
+    closeModal.addEventListener('click', closeModalFunc);
+    modalCloseBtn.addEventListener('click', closeModalFunc);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        closeModalFunc();
+      }
+    });
+    
+    // Handle found/claim buttons
+    document.querySelectorAll('.found-this').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // In a real app, this would trigger a process to connect the finder with the owner
+        alert('Thank you! Please submit a "Found Item" report with these details to help reunite the owner with their item.');
+        window.location.href = "{{ url_for('report_found') }}";
+      });
+    });
+    
+    document.querySelectorAll('.claim').forEach(btn => {
+      btn.addEventListener('click', function() {
+        // In a real app, this would initiate a claim verification process
+        alert('To claim this item, you will need to provide verification information to confirm ownership.');
+        // Could redirect to a claim form or show another modal
+      });
+    });
+  });
+</script>
+{% endblock %} 

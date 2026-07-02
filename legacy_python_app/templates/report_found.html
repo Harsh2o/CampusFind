@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Report Found Item - CampusFind{% endblock %}
+
+{% block head %}
+<style>
+  .report-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .report-header {
+    margin-bottom: 30px;
+  }
+
+  .report-header h2 {
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  .form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+  }
+
+  .radio-group {
+    margin-top: 10px;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .radio-option input[type="radio"] {
+    margin-right: 10px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-container">
+  <div class="report-header">
+    <h2>Report a Found Item</h2>
+    <p>Thank you for helping return lost items to their owners!</p>
+  </div>
+
+  <form method="POST" action="{{ url_for('report_found') }}" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="found-item-name">Item Name</label>
+      <input
+        type="text"
+        id="found-item-name"
+        name="found-item-name"
+        class="form-control"
+        placeholder="e.g. Blue Backpack"
+        required
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="found-item-category">Category</label>
+      <select id="found-item-category" name="found-item-category" class="form-control" required>
+        <option value="">Select a category</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="accessories">Accessories</option>
+        <option value="books">Books & Notes</option>
+        <option value="keys">Keys</option>
+        <option value="id-cards">ID Cards</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="found-date">When did you find it?</label>
+      <input type="date" id="found-date" name="found-date" class="form-control" required />
+    </div>
+    
+    <div class="form-group">
+      <label for="found-location">Where did you find it?</label>
+      <input
+        type="text"
+        id="found-location"
+        name="found-location"
+        class="form-control"
+        placeholder="e.g. Library, 2nd floor"
+        required
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="found-item-description">Description</label>
+      <textarea
+        id="found-item-description"
+        name="found-item-description"
+        class="form-control"
+        rows="4"
+        placeholder="Describe the item in detail"
+        required
+      ></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="found-item-photo">Upload Photo (optional)</label>
+      <input
+        type="file"
+        id="found-item-photo"
+        name="found-item-photo"
+        class="form-control"
+        accept="image/*"
+      />
+    </div>
+    
+    <div class="form-group">
+      <label for="finder-contact-info">Your Contact Information</label>
+      <input
+        type="email"
+        id="finder-contact-info"
+        name="finder-contact-info"
+        class="form-control"
+        placeholder="Your email address"
+        required
+      />
+    </div>
+    
+    <div class="form-group">
+      <label>Current Status</label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input
+            type="radio"
+            id="with-me"
+            name="item-status"
+            value="with-me"
+            checked
+          />
+          <label for="with-me">I have the item with me</label>
+        </div>
+        <div class="radio-option">
+          <input
+            type="radio"
+            id="turned-in"
+            name="item-status"
+            value="turned-in"
+          />
+          <label for="turned-in">I turned it in to Campus Security</label>
+        </div>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit Report</button>
+  </form>
+</div>
+{% endblock %} 
