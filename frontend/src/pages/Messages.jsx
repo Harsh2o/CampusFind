@@ -25,7 +25,8 @@ const Messages = () => {
   // Connect to socket.io
   useEffect(() => {
     if (user) {
-      socketRef.current = io('http://localhost:5000');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      socketRef.current = io(API_URL);
       socketRef.current.emit('join', user._id);
 
       socketRef.current.on('receiveMessage', (msg) => {

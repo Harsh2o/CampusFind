@@ -102,7 +102,7 @@ const Home = () => {
             {recentItems.length > 0 ? recentItems.map(item => (
               <div key={item._id} className="item-card">
                 {item.imagePath ? (
-                  <img src={`http://localhost:5000${item.imagePath}`} alt={item.name} className="item-image" />
+                  <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.imagePath}`} alt={item.name} className="item-image" />
                 ) : (
                   <div className="item-image-placeholder">No Image</div>
                 )}
